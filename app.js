@@ -12,7 +12,7 @@ bot.start((ctx) => ctx.reply('Привіт!🤗 напиши назву міст
 bot.on("message", async (ctx) => {
     try {
         const cityName = ctx.message.text;
-        const zipCode = ctx.message.text;
+        // const zipCode = ctx.message.text;
         const latitude = ctx.message.location ? ctx.message.location.latitude : undefined;
         const longitude = ctx.message.location ? ctx.message.location.longitude : undefined;
         let url = '';
@@ -43,7 +43,7 @@ bot.on("message", async (ctx) => {
 
             ctx.reply(`Вітаю!🤚Зараз у ${city} (${country}) ${description}, температура повітря 🌡 ${temp}ºC, відчувається як 🌡 ${feelsLike}ºC, вологість повітря становить 💧${humidity} % та швидкість вітру 💨${windSpeed} м/с 😉)`);
 
-            new Promise(resolve => setTimeout(resolve => {
+            new Promise(() => setTimeout(() => {
                 ctx.reply(code('Привіт!🤗 введи назву міста/країни або скинь геолокацію'));
             }, 2000));
         }
