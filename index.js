@@ -10,7 +10,7 @@ const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
 bot.start((ctx) => ctx.reply('Привіт!🤗 напиши назву міста/країни або скинь геолокацію'));
 bot.on("message", async (ctx) => {
     try {
-        let cityName = ctx.message.text;
+        const cityName = ctx.message.text;
         const zipCode = cityName;
         const latitude = ctx.message.location ? ctx.message.location.latitude : undefined;
         const longitude = ctx.message.location ? ctx.message.location.longitude : undefined;
@@ -50,7 +50,7 @@ bot.on("message", async (ctx) => {
     } catch (e) {
         ctx.reply("Ви ввели неправильну назву міста/країни❗️Cпробуйте ще раз😉!");
     }
-})
+});
 
 void bot.launch();
 
