@@ -2,6 +2,7 @@ import {Telegraf} from "telegraf";
 import {code} from "telegraf/format"
 import axios from "axios";
 import {config} from "dotenv";
+import {API_URLS} from "./urls.js";
 
 config({path: ".env"});
 
@@ -14,23 +15,17 @@ bot.on("message", async (ctx) => {
         const latitude = ctx.message.location ? ctx.message.location.latitude : undefined;
         const longitude = ctx.message.location ? ctx.message.location.longitude : undefined;
 
-        const API_URL = {
-            CITY_URL: `${process.env.WEATHER_URL}q=${cityName}&appid=${process.env.OPEN_WEATHER_API_KEY}&lang=ua`,
-            LOCATION_URL: `${process.env.WEATHER_URL}lat=${latitude}&lon=${longitude}&appid=${process.env.OPEN_WEATHER_API_KEY}&lang=ua`,
-            ZIP_CODE_URL: `${process.env.WEATHER_URL}zip=${zipCode}&appid=${process.env.OPEN_WEATHER_API_KEY}&lang=ua`,
-        };
-
         let url = '';
 
         switch (true) {
             case cityName !== undefined && !/\d/.test(cityName):
-                url = API_URL.CITY_URL;
+                url = API_URLS.CITY_URL(cityName);
                 break;
             case latitude !== undefined && longitude !== undefined:
-                url = API_URL.LOCATION_URL;
+                url = API_URLS.LOCATION_URL(latitude, longitude);
                 break;
             case zipCode !== undefined && /\d/.test(zipCode):
-                url = API_URL.ZIP_CODE_URL;
+                url = API_URLS.ZIP_CODE_URL(zipCode);
                 break;
             default:
                 console.error("URL Error!");
