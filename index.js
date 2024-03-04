@@ -6,27 +6,32 @@ import {config} from "dotenv";
 config({path: ".env"});
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
-
 bot.start((ctx) => ctx.reply('Привіт!🤗 напиши назву міста/країни або скинь геолокацію'));
-
 bot.on("message", async (ctx) => {
     try {
-        const cityName = ctx.message.text;
-        // const zipCode = ctx.message.text;
+        let cityName = ctx.message.text;
+        const zipCode = cityName;
         const latitude = ctx.message.location ? ctx.message.location.latitude : undefined;
         const longitude = ctx.message.location ? ctx.message.location.longitude : undefined;
+
+        const API_URL = {
+            CITY_URL: `${process.env.WEATHER_URL}q=${cityName}&appid=${process.env.OPEN_WEATHER_API_KEY}&lang=ua`,
+            LOCATION_URL: `${process.env.WEATHER_URL}lat=${latitude}&lon=${longitude}&appid=${process.env.OPEN_WEATHER_API_KEY}&lang=ua`,
+            ZIP_CODE_URL: `${process.env.WEATHER_URL}zip=${zipCode}&appid=${process.env.OPEN_WEATHER_API_KEY}&lang=ua`,
+        };
+
         let url = '';
 
         switch (true) {
-            case cityName !== undefined:
-                url = `${process.env.WEATHER_URL}q=${cityName}&appid=${process.env.OPEN_WEATHER_API_KEY}&lang=ua`;
+            case cityName !== undefined && !/\d/.test(cityName):
+                url = API_URL.CITY_URL;
                 break;
             case latitude !== undefined && longitude !== undefined:
-                url = `${process.env.WEATHER_URL}lat=${latitude}&lon=${longitude}&appid=${process.env.OPEN_WEATHER_API_KEY}&lang=ua`;
+                url = API_URL.LOCATION_URL;
                 break;
-            // case zipCode !== undefined:
-            //     url = `${process.env.WEATHER_URL}zip=${zipCode}&appid=${process.env.OPEN_WEATHER_API_KEY}&lang=ua`;
-            //     break;
+            case zipCode !== undefined && /\d/.test(zipCode):
+                url = API_URL.ZIP_CODE_URL;
+                break;
             default:
                 console.error("URL Error!");
         }
@@ -44,7 +49,7 @@ bot.on("message", async (ctx) => {
             ctx.reply(`Вітаю!🤚Зараз у ${city} (${country}) ${description}, температура повітря 🌡 ${temp}ºC, відчувається як 🌡 ${feelsLike}ºC, вологість повітря становить 💧${humidity} % та швидкість вітру 💨${windSpeed} м/с 😉)`);
 
             new Promise(() => setTimeout(() => {
-                ctx.reply(code('Привіт!🤗 введи назву міста/країни або скинь геолокацію'));
+                ctx.reply(code('Привіт!🤗 введи назву міста/країни/zipcode або скинь геолокацію'));
             }, 2000));
         }
     } catch (e) {
